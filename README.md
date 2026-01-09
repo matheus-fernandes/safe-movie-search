@@ -1,79 +1,94 @@
 # Safe Movie Search 🎬
 
-Catálogo de filmes reativo e moderno, desenvolvido com Angular 21. Foco em filtros granulares e experiência de busca fluida.
+Catálogo de filmes reativo e moderno, desenvolvido com **Angular 21 (Zoneless)**. A interface utiliza a estética de "Lente Protetora" para entregar um ambiente de busca seguro, performático e visualmente imersivo.
 
-## Sumário
-- Introdução
-- Funcionalidades Principais
-- Especificação de Requisitos
-- Integração Técnica e API
-- Arquitetura e Reatividade
-- Lógica de Clique Longo (UX)
-- Desenvolvimento
+## 🏗️ Arquitetura do Sistema
 
-## Funcionalidades Principais
-O Safe Movie Search é construído seguindo rigorosos padrões de UX e reatividade:
+O projeto segue os princípios de **Clean Architecture** e **Reactive State Management**, otimizado para a nova era do Angular sem Zone.js.
 
-- **Busca Reativa:** Filtragem instantânea e case-insensitive conforme a digitação.
-- **Filtro de Streaming:** Seleção dinâmica de fornecedores (Netflix, Prime Video, Disney+, Max).
-- **Filtro de Nota e Lançamento:** Controlo via range slider e inputs numéricos.
-- **Classificação Etária Inteligente (Multiseleção):**
-	- Seleção individual simples.
-	- Seleção em massa: ao usar Ctrl+Clique ou Long Press (600ms), a faixa etária clicada e todas as inferiores são selecionadas automaticamente.
-- **Filtro de Exclusão (Safe Content):** Oculta filmes com temas sensíveis (Violência, Drogas, Nudez, etc.) via IDs de palavras‑chave.
-- **Design Adaptativo:** Interface otimizada para Desktop e Mobile com tema Dark Mode (Slate‑950).
+### 1. Organização de Camadas (Screaming Architecture)
 
-## Especificação de Requisitos
+* **Core:** Singleton services, interceptors de API, modelos de domínio e a configuração global de "Safe Content".
+* **Features:** Módulos funcionais (Search, Filters, Catalog) que contêm "Smart Components".
+* **Shared:** Componentes de UI puramente visuais (Dumb Components), diretivas de interação e pipes.
+* **Data-Access:** Repositórios que gerenciam a comunicação com o TMDB e o estado reativo via Signals.
 
-### 1. Requisitos Funcionais (RF)
-1. **RF01 (Busca):** Filtragem em tempo real no campo de pesquisa.
-2. **RF02 (Providers):** Comportamento de rádio/toggle para streamings; clicar no ativo remove o filtro.
-3. **RF03 (Nota):** Slider de 0 a 10 com step de 0.5.
-4. **RF04 (Classificação):** Opções L, 10, 12, 14, 16, 18. Lógica inclusiva (selecionar abaixo de) via Ctrl+Click ou clique longo.
-5. **RF05 (Exclusão por Keywords):** Filtro negativo que utiliza IDs específicos do TMDB para omitir resultados indesejados.
+### 2. Gestão de Estado e Reatividade
 
-### 2. Integração Técnica e API
-- **Provider de Dados:** TMDB API (v3).
-- **Endpoints Utilizados:**
-	- `GET /discover/movie`: Listagem principal. Usa `without_keywords` para exclusão e `with_watch_providers` para streamings.
-	- `GET /search/movie`: Busca textual.
-	- `GET /watch/providers/movie`: Mapeamento de logótipos de streaming.
-	- `GET /movie/{movie_id}/keywords`: Palavras‑chave de um filme para validação local.
-- **Gestão de Palavras‑Chave (Keywords):**
-	- Lista predefinida de IDs críticos para "Safe Content" (ex.: Violência: `9715`, Conteúdo Sexual: `18035`).
-	- Exclusão aplicada diretamente na query da API via `without_keywords`, garantindo resposta já higienizada do servidor.
+* **Angular Signals:** Uso integral de `signal`, `computed` e `effect` para controle de estado granular.
+* **Zoneless Change Detection:** Alta performance com `ChangeDetectionStrategy.OnPush` e detecção de mudanças baseada em sinais.
+* **Reactive Data Flow:** Integração de RxJS (para debounce de busca) com Signals (para renderização de UI) através de `toSignal`.
 
-## Arquitetura e Reatividade
-- **State Management:** Angular Signals (`signal`, `computed`, `effect`).
-- **Service Layer:**
-	- `MovieService`: Centraliza chamadas HTTP e estado global de filtros.
-	- `KeywordService`: Gere mapeamento de IDs de palavras‑chave e categorias de restrição.
-- **Performance:**
-	- `ChangeDetectionStrategy.OnPush`.
-	- Lógica de filtragem via `computed()` para sincronizar UI e estado.
-	- `debounceTime` aplicado na busca para otimizar consumo da API.
+---
 
-## Lógica de Clique Longo (UX)
-- `mousedown`/`touchstart` → inicia timer de 600ms.
-- Ao completar o timer, define `isLongPress = true` e executa seleção em massa.
-- Em `click`, se `isLongPress` for verdadeiro, apenas reseta a flag (evita desseleção acidental).
+## 🎨 Identidade Visual & Design System
 
-## Desenvolvimento
+O projeto adota uma estética cyberpunk-minimalista em dark mode.
 
-### Servidor de Desenvolvimento
-Para iniciar o servidor local, execute:
+* **Base — Midnight Blue (#0F172A):** Profundidade e redução de fadiga ocular.
+* **Ação — Electric Indigo (#6366F1):** Modernidade e Vibe Coding.
+* **Segurança — Emerald Green (#10B981):** Feedback de conteúdo "Safe".
+* **Atenção — Soft Amber (#F59E0B):** Alertas de classificação etária.
+
+### Princípios de UX
+
+* **Lente Protetora:** Interface filtrada para precisão máxima.
+* **Feedback háptico visual:** Indicadores de progresso durante o Long Press.
+* **Microinterações:** Glassmorphism e transições suaves de escala via Tailwind/DaisyUI.
+
+---
+
+## 🛠️ Especificação Técnica & Componentes
+
+### Componentes Propostos
+
+* `SearchLensComponent`: Input reativo com lógica de `debounceTime`.
+* `FilterPanelComponent`: Gerenciador de estado dos toggles de streaming e idade.
+* `MovieGridComponent`: Grid otimizado com a nova sintaxe de controle de fluxo `@for`.
+* `SafetySliderComponent`: Custom form control para notas 0-10.
+
+### Serviços Principais
+
+* `MovieRepository`: Abstração da API TMDB usando `rxResource` para fetching declarativo.
+* `SafetyCoordinator`: Centraliza a lógica de exclusão de `keywords` críticas e filtros de idade.
+* `StreamingProviderService`: Mapeia e injeta as cores dinâmicas de cada plataforma de streaming.
+
+### 🚀 Funcionalidades (RFs)
+
+1. **RF01 (Busca):** Case-insensitive em tempo real via Signals.
+2. **RF02 (Streaming):** Toggles dinâmicos; seleção mutuamente exclusiva ou aditiva.
+3. **RF03 (Rating):** Slider gradual com gradientes dinâmicos (Red -> Green).
+4. **RF04 (Idade):** Lógica inclusiva inteligente. Clique simples (alvo) vs Long Press (cascata).
+5. **RF05 (Safe Content):** Filtro negativo via `without_keywords` (IDs: 9715, 18035) aplicado na origem.
+
+---
+
+## 🖱️ Lógica de Interação: Long Press
+
+A arquitetura delega a responsabilidade do Long Press para uma **Diretiva Estrutural/Atributo**:
+
+1. **Timer:** Inicia 600ms no `mousedown`/`touchstart`.
+2. **Visual:** Ativa um sinal de `progress` que o componente de UI consome para animar o preenchimento de um círculo.
+3. **Ação:** Dispara a seleção cascata (ex: seleciona 14, 12, 10 e L simultaneamente).
+
+---
+
+## 📦 Desenvolvimento
+
+### Requisitos
+
+* Node.js (versão compatível com Angular 21)
+* TMDB API Key
+
+### Instalação
 
 ```bash
+npm install
 npm start
-```
-
-Depois, acesse:
 
 ```
-http://localhost:4200/
-```
 
-### Configuração de API Key
-Renomeie o ficheiro `.env.example` para `.env` e insira o seu `TMDB_API_KEY`.
+### Configuração de Ambiente
 
-Para mais informações, visite a documentação oficial do Angular.
+1. Renomeie `.env.example` para `.env`.
+2. Informe `TMDB_API_KEY` com sua credencial.
