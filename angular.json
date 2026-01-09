@@ -2,11 +2,14 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
-    "imdb-movie-finder": {
+    "safe-movie-search": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -56,16 +59,25 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "imdb-movie-finder:build:production"
+              "buildTarget": "safe-movie-search:build:production"
             },
             "development": {
-              "buildTarget": "imdb-movie-finder:build:development"
+              "buildTarget": "safe-movie-search:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
