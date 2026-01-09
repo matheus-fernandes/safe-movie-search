@@ -64,7 +64,7 @@ O Safe Movie Search é construído seguindo rigorosos padrões de UX e reativida
 Para iniciar o servidor local, execute:
 
 ```bash
-ng serve
+npm start
 ```
 
 Depois, acesse:
