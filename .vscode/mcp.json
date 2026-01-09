@@ -1,0 +1,13 @@
+{
+	"servers": {
+		"daisyUI": {
+			"type": "http",
+			"url": "https://gitmcp.io/saadeghi/daisyui"
+		},
+		"angular-cli": {
+			"command": "npx",
+			"args": ["-y", "@angular/cli", "mcp"],
+		}
+	},
+	"inputs": []
+}
